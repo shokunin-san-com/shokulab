@@ -27,7 +27,7 @@ export default async function BlogPage() {
           <nav className="hidden md:flex gap-6 text-sm">
             <Link href="/products" className="hover:text-accent transition">商品一覧</Link>
             <Link href="/blog" className="text-accent font-bold">ブログ</Link>
-            <Link href="/ng-report" className="hover:text-accent transition">NGレポート</Link>
+            <Link href="/ng-report" className="hover:text-accent transition">職人リアルNGレポート</Link>
           </nav>
         </div>
       </header>

@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client"
 
 const kpiOptions = [
   { phase: "ph1", key: "email_list", label: "メールリスト獲得数" },
-  { phase: "ph1", key: "ng_sample", label: "NGサンプル請求数" },
+  { phase: "ph1", key: "ng_sample", label: "NGレポート サンプル請求数" },
   { phase: "ph1", key: "template_sales", label: "テンプレ販売部数" },
   { phase: "ph1", key: "x_followers", label: "Xフォロワー数" },
   { phase: "ph1", key: "revenue", label: "月次収益" },

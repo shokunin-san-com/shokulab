@@ -38,11 +38,11 @@ export default function NgReportForm() {
   if (status === "success") {
     return (
       <div className="bg-white border border-border rounded-md p-8 text-center">
-        <h2 className="text-xl font-bold text-primary mb-2">送信完了</h2>
+        <h2 className="text-xl font-bold text-primary mb-2">請求を受け付けました</h2>
         <p className="text-subtext">
-          サンプル請求を受け付けました。
+          創刊号（Vol.0）のサンプルPDFをメールでお送りいたします。
           <br />
-          担当者より折り返しご連絡いたします。
+          通常1〜2営業日以内にお届けします。
         </p>
       </div>
     )
@@ -60,6 +60,7 @@ export default function NgReportForm() {
           onChange={(e) => update("company", e.target.value)}
           required
           className="input"
+          placeholder="例：〇〇建材株式会社"
         />
       </div>
 
@@ -83,6 +84,7 @@ export default function NgReportForm() {
             value={form.position}
             onChange={(e) => update("position", e.target.value)}
             className="input"
+            placeholder="例：商品開発部 部長"
           />
         </div>
       </div>
@@ -101,28 +103,28 @@ export default function NgReportForm() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">興味のある商品カテゴリ</label>
+        <label className="block text-sm font-medium mb-1">貴社の業種</label>
         <select
           value={form.product_category}
           onChange={(e) => update("product_category", e.target.value)}
           className="input"
         >
           <option value="">選択してください</option>
-          <option value="template">業務テンプレート</option>
-          <option value="ai">AI活用ツール</option>
-          <option value="guide">ガイド・教材</option>
+          <option value="building_materials">建材メーカー</option>
+          <option value="tools">工具・ツールメーカー</option>
+          <option value="workwear">ワークウェアメーカー</option>
           <option value="other">その他</option>
         </select>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">メッセージ</label>
+        <label className="block text-sm font-medium mb-1">ご質問・ご要望</label>
         <textarea
           value={form.message}
           onChange={(e) => update("message", e.target.value)}
-          rows={4}
+          rows={3}
           className="input"
-          placeholder="ご質問やご要望があればお書きください"
+          placeholder="特定のカテゴリや製品に関する情報をご希望の場合はお書きください"
         />
       </div>
 
@@ -135,7 +137,7 @@ export default function NgReportForm() {
         disabled={status === "loading"}
         className="w-full bg-accent text-white py-3 rounded font-bold hover:opacity-90 transition disabled:opacity-50"
       >
-        {status === "loading" ? "送信中..." : "サンプルを請求する（無料）"}
+        {status === "loading" ? "送信中..." : "無料サンプルを請求する"}
       </button>
     </form>
   )

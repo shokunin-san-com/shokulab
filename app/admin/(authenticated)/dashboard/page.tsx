@@ -49,7 +49,7 @@ export default async function DashboardPage() {
 
       {/* Sub stats */}
       <div className="grid sm:grid-cols-2 gap-4 mb-8">
-        <StatCard icon={Mail} label="NGレポート請求数" value={String(ngRequestCount ?? 0)} />
+        <StatCard icon={Mail} label="NGレポート サンプル請求数" value={String(ngRequestCount ?? 0)} />
         <StatCard icon={ShoppingCart} label="累計購入数" value={String(recentPurchases?.length ?? 0)} />
       </div>
 

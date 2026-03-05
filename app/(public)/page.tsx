@@ -18,7 +18,7 @@ export default function HomePage() {
               ブログ
             </Link>
             <Link href="/ng-report" className="hover:text-accent transition">
-              NGレポート
+              職人リアルNGレポート
             </Link>
           </nav>
         </div>
@@ -48,7 +48,7 @@ export default function HomePage() {
               href="/ng-report"
               className="border border-white text-white px-8 py-3 rounded font-bold hover:bg-white/10 transition"
             >
-              NGレポート サンプル請求
+              無料サンプルを請求する
             </Link>
           </div>
         </div>

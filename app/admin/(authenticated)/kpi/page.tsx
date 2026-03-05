@@ -11,7 +11,7 @@ const kpiDefinitions = [
     phaseLabel: "基盤構築",
     items: [
       { kpi_key: "email_list", label: "メールリスト獲得数", target: 100, unit: "件" },
-      { kpi_key: "ng_sample", label: "NGサンプル請求数", target: 30, unit: "件" },
+      { kpi_key: "ng_sample", label: "NGレポート サンプル請求数", target: 30, unit: "件" },
       { kpi_key: "template_sales", label: "テンプレ販売部数", target: 50, unit: "部/月" },
       { kpi_key: "x_followers", label: "Xフォロワー数", target: 500, unit: "人" },
       { kpi_key: "revenue", label: "月次収益", target: 200000, unit: "円" },

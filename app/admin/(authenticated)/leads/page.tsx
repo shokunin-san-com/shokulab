@@ -18,9 +18,9 @@ export default async function AdminLeadsPage() {
 
   return (
     <div className="space-y-8">
-      {/* NGレポート請求 */}
+      {/* NGレポート サンプル請求 */}
       <section>
-        <h1 className="text-2xl font-bold text-primary mb-6">NGレポート サンプル請求</h1>
+        <h1 className="text-2xl font-bold text-primary mb-6">職人リアルNGレポート サンプル請求</h1>
         <div className="bg-white border border-border rounded-md overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -138,7 +138,7 @@ function NgStatusBadge({ status }: { status: string }) {
 
 function SourceBadge({ source }: { source: string | null }) {
   const labels: Record<string, string> = {
-    ng_report_sample: "NGレポート",
+    ng_report_sample: "職人リアルNGレポート",
     line: "LINE",
     blog: "ブログ",
     x: "X",

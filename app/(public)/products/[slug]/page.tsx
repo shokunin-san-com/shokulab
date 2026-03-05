@@ -62,7 +62,7 @@ export default async function ProductDetailPage({
               ブログ
             </Link>
             <Link href="/ng-report" className="hover:text-accent transition">
-              NGレポート
+              職人リアルNGレポート
             </Link>
           </nav>
         </div>

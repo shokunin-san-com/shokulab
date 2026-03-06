@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
+import {
+  sendNgReportAdminNotification,
+  sendNgReportAutoReply,
+} from "@/lib/email"
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,8 +41,31 @@ export async function POST(request: NextRequest) {
       type: "btob",
     })
 
+    // メール送信（RESEND_API_KEYがある場合のみ）
+    if (process.env.RESEND_API_KEY) {
+      try {
+        // 管理者への通知
+        await sendNgReportAdminNotification({
+          company,
+          name,
+          email,
+          position,
+          productCategory: product_category,
+          message,
+        })
+
+        // 請求者への自動返信
+        await sendNgReportAutoReply({ to: email, name })
+      } catch (e) {
+        console.error("Failed to send NG report emails:", e)
+      }
+    }
+
     return NextResponse.json({ success: true })
   } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
   }
 }

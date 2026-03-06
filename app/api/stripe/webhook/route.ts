@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getStripe } from "@/lib/stripe"
 import { createServiceClient } from "@/lib/supabase/server"
+import { sendPurchaseConfirmation } from "@/lib/email"
 import Stripe from "stripe"
 
 export async function POST(request: NextRequest) {
@@ -36,13 +37,15 @@ export async function POST(request: NextRequest) {
     const productSlug = session.metadata?.product_slug
 
     let productId: string | null = null
+    let productTitle = "ご購入商品"
     if (productSlug) {
       const { data: product } = await supabase
         .from("products")
-        .select("id")
+        .select("id, title")
         .eq("slug", productSlug)
         .single()
       productId = product?.id ?? null
+      productTitle = product?.title ?? productTitle
     }
 
     await supabase.from("purchases").insert({
@@ -52,6 +55,20 @@ export async function POST(request: NextRequest) {
       amount: session.amount_total ? Math.round(session.amount_total) : null,
       status: "paid",
     })
+
+    // 購入完了メール送信
+    const customerEmail = session.customer_details?.email
+    if (customerEmail && process.env.RESEND_API_KEY) {
+      try {
+        await sendPurchaseConfirmation({
+          to: customerEmail,
+          productTitle,
+          amount: session.amount_total ? Math.round(session.amount_total) : null,
+        })
+      } catch (e) {
+        console.error("Failed to send purchase confirmation email:", e)
+      }
+    }
   }
 
   return NextResponse.json({ received: true })

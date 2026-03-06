@@ -2,11 +2,13 @@
 
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import rehypeRaw from "rehype-raw"
 
 export default function MarkdownRenderer({ content }: { content: string }) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeRaw]}
       components={{
         h1: ({ children }) => (
           <h1 className="text-[26px] font-black text-[#0D1B26] mt-10 mb-4 leading-snug tracking-tight">

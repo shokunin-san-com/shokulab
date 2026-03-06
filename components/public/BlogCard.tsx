@@ -8,20 +8,37 @@ const categoryLabels: Record<string, string> = {
   ma: "建設業M&A",
 }
 
+const categoryGradients: Record<string, string> = {
+  craftsman: "linear-gradient(135deg, #E6F4FA 0%, #B8E6F0 100%)",
+  owner: "linear-gradient(135deg, #003D5C 0%, #005A80 100%)",
+  maker: "linear-gradient(135deg, #F0F9FD 0%, #D6EFF8 100%)",
+  ma: "linear-gradient(135deg, #FFF8EC 0%, #FFE8B8 100%)",
+}
+
+const categoryIcons: Record<string, string> = {
+  craftsman: "wrench",
+  owner: "trending-up",
+  maker: "cpu",
+  ma: "handshake",
+}
+
 export default function BlogCard({ post }: { post: BlogPost }) {
+  const gradient = categoryGradients[post.category || ""] || categoryGradients.craftsman
+  const isOwner = post.category === "owner"
+
   return (
     <Link
       href={`/blog/${post.slug}`}
       className="bg-white border border-[#E2EBF0] rounded-[10px] overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all block"
     >
-      {/* Thumbnail placeholder */}
+      {/* Category-styled thumbnail */}
       <div
-        className="h-[120px] flex items-center justify-center border-b border-[#E2EBF0]"
-        style={{ background: "linear-gradient(135deg, #E6F4FA, #D0ECF7)" }}
+        className="h-[140px] flex items-end p-5 border-b border-[#E2EBF0] relative"
+        style={{ background: gradient }}
       >
-        <div className="w-12 h-12 bg-brand-blue-pale border border-brand-blue-mid rounded-lg flex items-center justify-center text-[22px]">
-          📄
-        </div>
+        <p className={`text-[13px] font-bold leading-snug line-clamp-2 ${isOwner ? "text-white" : "text-brand-navy"}`}>
+          {post.title}
+        </p>
       </div>
       <div className="px-5 py-5">
         <div className="flex justify-between items-center mb-3">

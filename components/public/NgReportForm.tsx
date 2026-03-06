@@ -37,9 +37,14 @@ export default function NgReportForm() {
 
   if (status === "success") {
     return (
-      <div className="bg-white border border-border rounded-md p-8 text-center">
-        <h2 className="text-xl font-bold text-primary mb-2">請求を受け付けました</h2>
-        <p className="text-subtext">
+      <div className="bg-white border border-[#E2EBF0] rounded-[10px] p-10 text-center">
+        <div className="w-12 h-12 bg-brand-blue-pale rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8L6.5 11.5L13 4.5" stroke="#0099CC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-[#0D1B26] mb-2">請求を受け付けました</h2>
+        <p className="text-gray-500 text-sm leading-relaxed">
           創刊号（Vol.0）のサンプルPDFをメールでお送りいたします。
           <br />
           通常1〜2営業日以内にお届けします。
@@ -49,9 +54,9 @@ export default function NgReportForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white border border-border rounded-md p-8 space-y-4">
+    <form onSubmit={handleSubmit} className="bg-white border border-[#E2EBF0] rounded-[10px] p-8 space-y-5">
       <div>
-        <label className="block text-sm font-medium mb-1">
+        <label className="block text-[13px] font-medium text-[#0D1B26] mb-1.5">
           会社名 <span className="text-red-500">*</span>
         </label>
         <input
@@ -64,9 +69,9 @@ export default function NgReportForm() {
         />
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label className="block text-[13px] font-medium text-[#0D1B26] mb-1.5">
             お名前 <span className="text-red-500">*</span>
           </label>
           <input
@@ -78,7 +83,7 @@ export default function NgReportForm() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">役職</label>
+          <label className="block text-[13px] font-medium text-[#0D1B26] mb-1.5">役職</label>
           <input
             type="text"
             value={form.position}
@@ -90,7 +95,7 @@ export default function NgReportForm() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">
+        <label className="block text-[13px] font-medium text-[#0D1B26] mb-1.5">
           メールアドレス <span className="text-red-500">*</span>
         </label>
         <input
@@ -103,7 +108,7 @@ export default function NgReportForm() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">貴社の業種</label>
+        <label className="block text-[13px] font-medium text-[#0D1B26] mb-1.5">貴社の業種</label>
         <select
           value={form.product_category}
           onChange={(e) => update("product_category", e.target.value)}
@@ -118,7 +123,7 @@ export default function NgReportForm() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">ご質問・ご要望</label>
+        <label className="block text-[13px] font-medium text-[#0D1B26] mb-1.5">ご質問・ご要望</label>
         <textarea
           value={form.message}
           onChange={(e) => update("message", e.target.value)}
@@ -135,7 +140,7 @@ export default function NgReportForm() {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full bg-accent text-white py-3 rounded font-bold hover:opacity-90 transition disabled:opacity-50"
+        className="w-full bg-brand-orange text-white py-3.5 rounded-md font-bold text-sm hover:bg-[#E09200] hover:-translate-y-0.5 transition-all disabled:opacity-50"
       >
         {status === "loading" ? "送信中..." : "無料サンプルを請求する"}
       </button>

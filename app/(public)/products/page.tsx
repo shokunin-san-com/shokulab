@@ -1,12 +1,14 @@
 import { createClient } from "@/lib/supabase/server"
 import ProductCard from "@/components/public/ProductCard"
-import Link from "next/link"
+import SiteNav from "@/components/public/SiteNav"
+import SiteFooter from "@/components/public/SiteFooter"
 import type { Product } from "@/types"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "商品一覧 | shokulab",
-  description: "職人・建設業界向けの業務テンプレート、AI活用ガイド、M&A教材をお探しの方はこちら。",
+  description:
+    "職人・建設業界向けの業務テンプレート、AI活用ガイド、M&A教材をお探しの方はこちら。",
 }
 
 export const dynamic = "force-dynamic"
@@ -21,52 +23,42 @@ export default async function ProductsPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Header */}
-      <header className="bg-primary text-white">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold">
-            shokulab
-          </Link>
-          <nav className="hidden md:flex gap-6 text-sm">
-            <Link href="/products" className="text-accent font-bold">
-              商品一覧
-            </Link>
-            <Link href="/blog" className="hover:text-accent transition">
-              ブログ
-            </Link>
-            <Link href="/ng-report" className="hover:text-accent transition">
-              職人リアルNGレポート
-            </Link>
-          </nav>
+      <SiteNav />
+
+      {/* Hero */}
+      <section
+        className="pt-32 pb-12 border-b border-[#E2EBF0]"
+        style={{ background: "linear-gradient(180deg, #EDF6FB 0%, #fff 100%)" }}
+      >
+        <div className="max-w-[1040px] mx-auto px-16">
+          <span className="inline-block text-[11px] font-bold tracking-[2px] text-brand-blue uppercase mb-3">
+            PRODUCTS
+          </span>
+          <h1 className="text-[36px] font-black tracking-tight text-[#0D1B26] mb-3">
+            商品一覧
+          </h1>
+          <p className="text-[15px] text-gray-500 leading-relaxed">
+            職人・建設業界に特化したテンプレート・ガイドをご用意しています。
+          </p>
         </div>
-      </header>
+      </section>
 
       {/* Content */}
-      <main className="max-w-6xl mx-auto px-4 py-12">
-        <h1 className="text-3xl font-bold text-primary mb-2">商品一覧</h1>
-        <p className="text-subtext mb-8">
-          職人・建設業界に特化したテンプレート・ガイドをご用意しています。
-        </p>
-
+      <main className="max-w-[1040px] mx-auto px-16 py-16">
         {products && products.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 gap-5">
             {(products as Product[]).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
-          <div className="bg-surface border border-border rounded-md p-12 text-center">
-            <p className="text-subtext">現在、公開中の商品はありません。</p>
+          <div className="bg-[#F6F9FB] border border-[#E2EBF0] rounded-[10px] p-16 text-center">
+            <p className="text-gray-500">現在、公開中の商品はありません。</p>
           </div>
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-primary text-white py-8">
-        <div className="max-w-6xl mx-auto px-4 text-center text-sm text-muted">
-          <p>&copy; {new Date().getFullYear()} 株式会社職人さんドットコム All rights reserved.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

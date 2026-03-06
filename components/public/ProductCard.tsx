@@ -1,14 +1,6 @@
 import Link from "next/link"
 import { formatPriceRange } from "@/lib/utils"
 import type { Product } from "@/types"
-import { FileText, BookOpen, Cpu, Package } from "lucide-react"
-
-const categoryIcons: Record<string, React.ElementType> = {
-  template: FileText,
-  guide: BookOpen,
-  ai: Cpu,
-  bundle: Package,
-}
 
 const categoryLabels: Record<string, string> = {
   template: "テンプレート",
@@ -20,28 +12,25 @@ const categoryLabels: Record<string, string> = {
 }
 
 export default function ProductCard({ product }: { product: Product }) {
-  const Icon = categoryIcons[product.category] || FileText
-
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="bg-white border border-border rounded-md p-6 hover:shadow-md transition block"
+      className="bg-white border border-[#E2EBF0] rounded-[10px] p-7 hover:shadow-lg hover:-translate-y-0.5 transition-all block"
     >
-      <div className="flex items-center gap-2 mb-3">
-        <Icon className="w-5 h-5 text-secondary" />
-        <span className="text-xs font-medium text-secondary bg-secondary/10 px-2 py-0.5 rounded">
+      <div className="flex items-center gap-2 mb-4">
+        <span className="inline-block text-[10px] font-bold tracking-[1px] px-2.5 py-0.5 rounded bg-brand-blue-pale text-brand-blue">
           {categoryLabels[product.category] || product.category}
         </span>
       </div>
-      <h3 className="text-lg font-bold text-primary mb-2 leading-snug">
+      <h3 className="text-[16px] font-bold text-[#0D1B26] mb-2 leading-snug">
         {product.title}
       </h3>
       {product.description && (
-        <p className="text-sm text-subtext line-clamp-2 mb-4">
+        <p className="text-[13px] text-gray-500 line-clamp-2 mb-5 leading-relaxed">
           {product.description}
         </p>
       )}
-      <p className="text-lg font-bold text-accent">
+      <p className="text-lg font-black text-brand-blue font-dm">
         {formatPriceRange(product.price_min, product.price_max)}
       </p>
     </Link>

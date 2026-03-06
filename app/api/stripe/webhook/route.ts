@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getStripe } from "@/lib/stripe"
 import { createServiceClient } from "@/lib/supabase/server"
+import { sendPurchaseConfirmation } from "@/lib/email"
 import Stripe from "stripe"
 
 export async function POST(request: NextRequest) {
@@ -52,6 +53,24 @@ export async function POST(request: NextRequest) {
       amount: session.amount_total ? Math.round(session.amount_total) : null,
       status: "paid",
     })
+
+    // 購入者に確認メール送信
+    const customerEmail = session.customer_details?.email
+    if (customerEmail && productSlug) {
+      const { data: product } = await supabase
+        .from("products")
+        .select("title")
+        .eq("slug", productSlug)
+        .single()
+
+      if (product) {
+        await sendPurchaseConfirmation({
+          customerEmail,
+          productTitle: product.title,
+          amount: session.amount_total ? Math.round(session.amount_total) : 0,
+        })
+      }
+    }
   }
 
   return NextResponse.json({ received: true })

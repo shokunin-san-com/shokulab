@@ -3,8 +3,10 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, ExternalLink, CheckCircle } from "lucide-react"
 import { formatPriceRange } from "@/lib/utils"
+import { productJsonLd, breadcrumbJsonLd } from "@/lib/jsonld"
 import SiteNav from "@/components/public/SiteNav"
 import SiteFooter from "@/components/public/SiteFooter"
+import MarkdownRenderer from "@/components/public/MarkdownRenderer"
 import type { Product } from "@/types"
 import type { Metadata } from "next"
 
@@ -23,11 +25,19 @@ export async function generateMetadata({
     .eq("is_published", true)
     .single()
 
-  if (!product) return { title: "商品が見つかりません | shokulab" }
+  if (!product) return { title: "商品が見つかりません" }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shokulab.com"
   return {
-    title: `${product.title} | shokulab`,
-    description: product.description || undefined,
+    title: product.title,
+    description: product.description?.slice(0, 160) || undefined,
+    alternates: { canonical: `${siteUrl}/products/${params.slug}` },
+    openGraph: {
+      title: product.title,
+      description: product.description?.slice(0, 160) || undefined,
+      type: "website",
+      url: `${siteUrl}/products/${params.slug}`,
+    },
   }
 }
 
@@ -47,9 +57,28 @@ export default async function ProductDetailPage({
   if (!product) notFound()
 
   const p = product as Product
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shokulab.com"
 
   return (
     <div className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productJsonLd(p)),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd([
+              { name: "ホーム", url: siteUrl },
+              { name: "商品一覧", url: `${siteUrl}/products` },
+              { name: p.title, url: `${siteUrl}/products/${p.slug}` },
+            ])
+          ),
+        }}
+      />
       <SiteNav />
 
       <main className="pt-28 pb-20 max-w-[760px] mx-auto px-8">
@@ -76,8 +105,8 @@ export default async function ProductDetailPage({
           </div>
 
           {p.description && (
-            <div className="text-[15px] text-gray-500 leading-[1.9] mb-10 whitespace-pre-wrap">
-              {p.description}
+            <div className="mb-10">
+              <MarkdownRenderer content={p.description} />
             </div>
           )}
 

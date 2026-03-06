@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import BlogCard from "@/components/public/BlogCard"
 import SiteNav from "@/components/public/SiteNav"
 import SiteFooter from "@/components/public/SiteFooter"
+import { blogListJsonLd } from "@/lib/jsonld"
 import type { BlogPost } from "@/types"
 import type { Metadata } from "next"
 
@@ -24,6 +25,20 @@ export default async function BlogPage() {
 
   return (
     <div className="min-h-screen bg-[#F6F9FB]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            blogListJsonLd(
+              (posts as BlogPost[])?.map((p) => ({
+                title: p.title,
+                slug: p.slug,
+                published_at: p.published_at,
+              })) || []
+            )
+          ),
+        }}
+      />
       <SiteNav />
 
       {/* Hero */}

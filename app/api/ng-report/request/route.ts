@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
+import { sendNgReportRequestNotification } from "@/lib/email"
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,6 +36,16 @@ export async function POST(request: NextRequest) {
       company,
       source: "ng_report_sample",
       type: "btob",
+    })
+
+    // 管理者に通知メール送信
+    await sendNgReportRequestNotification({
+      company,
+      name,
+      email,
+      position,
+      productCategory: product_category,
+      message,
     })
 
     return NextResponse.json({ success: true })

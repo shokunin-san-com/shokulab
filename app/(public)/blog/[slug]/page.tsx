@@ -3,8 +3,10 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { formatDate } from "@/lib/utils"
+import { articleJsonLd, breadcrumbJsonLd } from "@/lib/jsonld"
 import SiteNav from "@/components/public/SiteNav"
 import SiteFooter from "@/components/public/SiteFooter"
+import MarkdownRenderer from "@/components/public/MarkdownRenderer"
 import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
@@ -29,11 +31,19 @@ export async function generateMetadata({
     .eq("is_published", true)
     .single()
 
-  if (!post) return { title: "記事が見つかりません | shokulab" }
+  if (!post) return { title: "記事が見つかりません" }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shokulab.com"
   return {
-    title: `${post.seo_title || post.title} | shokulab`,
+    title: post.seo_title || post.title,
     description: post.seo_description || undefined,
+    alternates: { canonical: `${siteUrl}/blog/${params.slug}` },
+    openGraph: {
+      title: post.seo_title || post.title,
+      description: post.seo_description || undefined,
+      type: "article",
+      url: `${siteUrl}/blog/${params.slug}`,
+    },
   }
 }
 
@@ -52,8 +62,28 @@ export default async function BlogPostPage({
 
   if (!post) notFound()
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shokulab.com"
+
   return (
     <div className="min-h-screen bg-[#F6F9FB]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(articleJsonLd(post)),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd([
+              { name: "ホーム", url: siteUrl },
+              { name: "ブログ", url: `${siteUrl}/blog` },
+              { name: post.title, url: `${siteUrl}/blog/${post.slug}` },
+            ])
+          ),
+        }}
+      />
       <SiteNav />
 
       <main className="pt-28 pb-20 max-w-[760px] mx-auto px-8">
@@ -87,9 +117,7 @@ export default async function BlogPostPage({
 
           {/* Article body */}
           <div className="px-10 py-10">
-            <div className="text-[15px] text-gray-600 leading-[1.9] whitespace-pre-wrap">
-              {post.content}
-            </div>
+            {post.content && <MarkdownRenderer content={post.content} />}
           </div>
 
           {/* Tags */}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
+import { sendLeadNotification } from "@/lib/email"
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,6 +23,9 @@ export async function POST(request: NextRequest) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
+
+    // 管理者に通知
+    await sendLeadNotification({ email, name, source })
 
     return NextResponse.json({ success: true })
   } catch {

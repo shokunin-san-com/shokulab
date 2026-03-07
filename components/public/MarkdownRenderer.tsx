@@ -4,7 +4,52 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
 
+/**
+ * content が純粋なHTML（<h1>, <p> 等で始まる）か判定。
+ * HTMLの場合は dangerouslySetInnerHTML で直接レンダリング。
+ * Markdownの場合は react-markdown で処理。
+ */
+function isHtmlContent(content: string): boolean {
+  const trimmed = content.trim()
+  return trimmed.startsWith("<") && /<\/(p|h[1-6]|div|section|article)>/.test(trimmed)
+}
+
+const htmlStyles = `
+  .blog-html-content h1 { font-size: 26px; font-weight: 900; color: #0D1B26; margin-top: 2.5rem; margin-bottom: 1rem; line-height: 1.4; letter-spacing: -0.02em; }
+  .blog-html-content h2 { font-size: 22px; font-weight: 700; color: #0D1B26; margin-top: 2.25rem; margin-bottom: 0.75rem; line-height: 1.4; letter-spacing: -0.02em; border-bottom: 1px solid #E2EBF0; padding-bottom: 0.5rem; }
+  .blog-html-content h3 { font-size: 18px; font-weight: 700; color: #0D1B26; margin-top: 1.75rem; margin-bottom: 0.5rem; line-height: 1.4; }
+  .blog-html-content h4 { font-size: 16px; font-weight: 700; color: #0D1B26; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+  .blog-html-content p { font-size: 15px; color: #4B5563; line-height: 1.9; margin-bottom: 1.25rem; }
+  .blog-html-content ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 1.25rem; font-size: 15px; color: #4B5563; line-height: 1.9; }
+  .blog-html-content ol { list-style: decimal; padding-left: 1.5rem; margin-bottom: 1.25rem; font-size: 15px; color: #4B5563; line-height: 1.9; }
+  .blog-html-content li { margin-bottom: 0.375rem; }
+  .blog-html-content blockquote { border-left: 3px solid #00A5D9; background: #F6F9FB; padding: 0.75rem 1rem 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 14px; color: #6B7280; font-style: italic; border-radius: 0 0.375rem 0.375rem 0; }
+  .blog-html-content a { color: #00A5D9; text-decoration: underline; text-underline-offset: 2px; }
+  .blog-html-content a:hover { color: #007AAD; }
+  .blog-html-content strong { font-weight: 700; color: #0D1B26; }
+  .blog-html-content table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 1.25rem; }
+  .blog-html-content thead { background: #003D5C; color: white; }
+  .blog-html-content th { padding: 0.625rem 1rem; text-align: left; font-size: 13px; font-weight: 700; }
+  .blog-html-content td { padding: 0.625rem 1rem; border-bottom: 1px solid #E2EBF0; color: #4B5563; }
+  .blog-html-content hr { border-color: #E2EBF0; margin: 2rem 0; }
+  .blog-html-content img { border-radius: 0.5rem; max-width: 100%; height: auto; margin: 1.25rem 0; }
+`
+
 export default function MarkdownRenderer({ content }: { content: string }) {
+  // HTML content → dangerouslySetInnerHTML で直接レンダリング
+  if (isHtmlContent(content)) {
+    return (
+      <>
+        <style dangerouslySetInnerHTML={{ __html: htmlStyles }} />
+        <div
+          className="blog-html-content"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      </>
+    )
+  }
+
+  // Markdown content → react-markdown で処理
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}

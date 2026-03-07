@@ -38,12 +38,14 @@ const htmlStyles = `
 export default function MarkdownRenderer({ content }: { content: string }) {
   // HTML content → dangerouslySetInnerHTML で直接レンダリング
   if (isHtmlContent(content)) {
+    // ページヘッダーにタイトルがあるので、body_html内の最初のH1を除去
+    const cleanedHtml = content.replace(/^\s*<h1[^>]*>.*?<\/h1>\s*/i, "")
     return (
       <>
         <style dangerouslySetInnerHTML={{ __html: htmlStyles }} />
         <div
           className="blog-html-content"
-          dangerouslySetInnerHTML={{ __html: content }}
+          dangerouslySetInnerHTML={{ __html: cleanedHtml }}
         />
       </>
     )

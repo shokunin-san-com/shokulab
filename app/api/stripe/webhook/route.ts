@@ -37,13 +37,15 @@ export async function POST(request: NextRequest) {
     const productSlug = session.metadata?.product_slug
 
     let productId: string | null = null
+    let productTitle = "ご購入商品"
     if (productSlug) {
       const { data: product } = await supabase
         .from("products")
-        .select("id")
+        .select("id, title")
         .eq("slug", productSlug)
         .single()
       productId = product?.id ?? null
+      productTitle = product?.title ?? productTitle
     }
 
     await supabase.from("purchases").insert({
@@ -54,21 +56,17 @@ export async function POST(request: NextRequest) {
       status: "paid",
     })
 
-    // 購入者に確認メール送信
+    // 購入完了メール送信
     const customerEmail = session.customer_details?.email
-    if (customerEmail && productSlug) {
-      const { data: product } = await supabase
-        .from("products")
-        .select("title")
-        .eq("slug", productSlug)
-        .single()
-
-      if (product) {
+    if (customerEmail && process.env.RESEND_API_KEY) {
+      try {
         await sendPurchaseConfirmation({
-          customerEmail,
-          productTitle: product.title,
-          amount: session.amount_total ? Math.round(session.amount_total) : 0,
+          to: customerEmail,
+          productTitle,
+          amount: session.amount_total ? Math.round(session.amount_total) : null,
         })
+      } catch (e) {
+        console.error("Failed to send purchase confirmation email:", e)
       }
     }
   }

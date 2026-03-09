@@ -14,6 +14,38 @@ function isHtmlContent(content: string): boolean {
   return trimmed.startsWith("<") && /<\/(p|h[1-6]|div|section|article)>/.test(trimmed)
 }
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/<[^>]+>/g, "")
+    .replace(/[^a-z0-9\u3000-\u9fff\u30a0-\u30ff\u3040-\u309f\s-]/g, "")
+    .replace(/[\s]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    || `heading-${Math.random().toString(36).slice(2, 8)}`
+}
+
+function childrenToText(children: React.ReactNode): string {
+  if (typeof children === "string") return children
+  if (Array.isArray(children)) return children.map(childrenToText).join("")
+  if (children && typeof children === "object" && "props" in children) {
+    return childrenToText((children as React.ReactElement<{children?: React.ReactNode}>).props.children)
+  }
+  return String(children ?? "")
+}
+
+/**
+ * HTML見出しにid属性を自動挿入する（ToC連携用）
+ */
+function addIdsToHtmlHeadings(html: string): string {
+  return html.replace(/<h([23])([^>]*)>(.*?)<\/h\1>/gi, (_match, level, attrs, inner) => {
+    const text = inner.replace(/<[^>]+>/g, "").trim()
+    const id = slugify(text)
+    if (attrs.includes("id=")) return _match
+    return `<h${level}${attrs} id="${id}">${inner}</h${level}>`
+  })
+}
+
 const htmlStyles = `
   .blog-html-content h1 { font-size: 26px; font-weight: 900; color: #0D1B26; margin-top: 2.5rem; margin-bottom: 1rem; line-height: 1.4; letter-spacing: -0.02em; }
   .blog-html-content h2 { font-size: 22px; font-weight: 700; color: #0D1B26; margin-top: 2.25rem; margin-bottom: 0.75rem; line-height: 1.4; letter-spacing: -0.02em; border-bottom: 1px solid #E2EBF0; padding-bottom: 0.5rem; }
@@ -39,7 +71,9 @@ export default function MarkdownRenderer({ content }: { content: string }) {
   // HTML content → dangerouslySetInnerHTML で直接レンダリング
   if (isHtmlContent(content)) {
     // ページヘッダーにタイトルがあるので、body_html内の最初のH1を除去
-    const cleanedHtml = content.replace(/^\s*<h1[^>]*>.*?<\/h1>\s*/i, "")
+    let cleanedHtml = content.replace(/^\s*<h1[^>]*>.*?<\/h1>\s*/i, "")
+    // ToC連携: h2/h3にid属性を自動付与
+    cleanedHtml = addIdsToHtmlHeadings(cleanedHtml)
     return (
       <>
         <style dangerouslySetInnerHTML={{ __html: htmlStyles }} />
@@ -62,16 +96,22 @@ export default function MarkdownRenderer({ content }: { content: string }) {
             {children}
           </h1>
         ),
-        h2: ({ children }) => (
-          <h2 className="text-[22px] font-bold text-[#0D1B26] mt-9 mb-3 leading-snug tracking-tight border-b border-[#E2EBF0] pb-2">
-            {children}
-          </h2>
-        ),
-        h3: ({ children }) => (
-          <h3 className="text-[18px] font-bold text-[#0D1B26] mt-7 mb-2 leading-snug">
-            {children}
-          </h3>
-        ),
+        h2: ({ children }) => {
+          const id = slugify(childrenToText(children))
+          return (
+            <h2 id={id} className="text-[22px] font-bold text-[#0D1B26] mt-9 mb-3 leading-snug tracking-tight border-b border-[#E2EBF0] pb-2">
+              {children}
+            </h2>
+          )
+        },
+        h3: ({ children }) => {
+          const id = slugify(childrenToText(children))
+          return (
+            <h3 id={id} className="text-[18px] font-bold text-[#0D1B26] mt-7 mb-2 leading-snug">
+              {children}
+            </h3>
+          )
+        },
         h4: ({ children }) => (
           <h4 className="text-[16px] font-bold text-[#0D1B26] mt-5 mb-2">
             {children}

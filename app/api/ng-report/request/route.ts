@@ -17,6 +17,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!EMAIL_RE.test(email)) {
+      return NextResponse.json({ error: "メールアドレスの形式が正しくありません。" }, { status: 400 })
+    }
+    if (company.length > 200 || name.length > 100 || email.length > 254) {
+      return NextResponse.json({ error: "入力値が長すぎます。" }, { status: 400 })
+    }
+    if (message && message.length > 2000) {
+      return NextResponse.json({ error: "メッセージは2000文字以内で入力してください。" }, { status: 400 })
+    }
+
     const supabase = createServiceClient()
 
     const { error } = await supabase.from("ng_report_requests").insert({
@@ -32,14 +43,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // リードテーブルにも登録
-    await supabase.from("leads").insert({
+    // リードテーブルにも登録（重複は無視）
+    const { error: leadsError } = await supabase.from("leads").insert({
       email,
       name,
       company,
       source: "ng_report_sample",
       type: "btob",
     })
+    if (leadsError && leadsError.code !== "23505") {
+      console.error("Failed to insert lead:", leadsError.message)
+    }
 
     // メール送信（RESEND_API_KEYがある場合のみ）
     if (process.env.RESEND_API_KEY) {

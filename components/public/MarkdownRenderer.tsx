@@ -3,6 +3,7 @@
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
+import DOMPurify from "isomorphic-dompurify"
 
 /**
  * content が純粋なHTML（<h1>, <p> 等で始まる）か判定。
@@ -74,12 +75,13 @@ export default function MarkdownRenderer({ content }: { content: string }) {
     let cleanedHtml = content.replace(/^\s*<h1[^>]*>.*?<\/h1>\s*/i, "")
     // ToC連携: h2/h3にid属性を自動付与
     cleanedHtml = addIdsToHtmlHeadings(cleanedHtml)
+    const safeHtml = DOMPurify.sanitize(cleanedHtml, { ADD_TAGS: ["iframe"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"] })
     return (
       <>
         <style dangerouslySetInnerHTML={{ __html: htmlStyles }} />
         <div
           className="blog-html-content"
-          dangerouslySetInnerHTML={{ __html: cleanedHtml }}
+          dangerouslySetInnerHTML={{ __html: safeHtml }}
         />
       </>
     )

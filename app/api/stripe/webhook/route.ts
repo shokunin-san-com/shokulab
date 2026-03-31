@@ -50,6 +50,17 @@ export async function POST(request: NextRequest) {
       downloadUrl = product?.download_url ?? null
     }
 
+    // 冪等性チェック: 同一セッションの二重処理を防ぐ
+    const { data: existing } = await supabase
+      .from("purchases")
+      .select("id")
+      .eq("stripe_session_id", session.id)
+      .maybeSingle()
+
+    if (existing) {
+      return NextResponse.json({ received: true, duplicate: true })
+    }
+
     await supabase.from("purchases").insert({
       stripe_session_id: session.id,
       product_id: productId,

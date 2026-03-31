@@ -13,6 +13,16 @@ export async function POST(request: NextRequest) {
 
     const supabase = createServiceClient()
 
+    const { data: existing } = await supabase
+      .from("leads")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle()
+
+    if (existing) {
+      return NextResponse.json({ success: true, duplicate: true })
+    }
+
     const { error } = await supabase.from("leads").insert({
       email,
       name: name || null,
@@ -24,7 +34,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // 管理者に通知
+    // 管理者に通知（新規登録時のみ）
     await sendLeadNotification({ email, name, source })
 
     return NextResponse.json({ success: true })

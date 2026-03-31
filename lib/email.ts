@@ -1,5 +1,14 @@
 import { Resend } from "resend"
 
+function escapeHtml(str: string | null | undefined): string {
+  return (str ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+}
+
 let resend: Resend | null = null
 
 function getResend() {
@@ -26,15 +35,16 @@ export async function sendPurchaseConfirmation({
   amount: number | null
   downloadUrl: string | null
 }) {
+  const safeDownloadUrl = escapeHtml(downloadUrl)
   const downloadSection = downloadUrl
     ? `
           <div style="background: #F0F9FD; border-left: 3px solid #0099CC; padding: 20px 24px; border-radius: 0 8px 8px 0; margin-bottom: 24px;">
             <p style="font-size: 13px; font-weight: 700; color: #0099CC; margin: 0 0 10px;">ダウンロードはこちら</p>
-            <a href="${downloadUrl}" style="display: inline-block; background: #0099CC; color: #fff; padding: 12px 28px; border-radius: 6px; font-size: 14px; font-weight: 700; text-decoration: none;">
+            <a href="${safeDownloadUrl}" style="display: inline-block; background: #0099CC; color: #fff; padding: 12px 28px; border-radius: 6px; font-size: 14px; font-weight: 700; text-decoration: none;">
               ダウンロードする
             </a>
             <p style="font-size: 12px; color: #8EA4B4; margin: 10px 0 0;">
-              リンクが開かない場合: ${downloadUrl}
+              リンクが開かない場合: ${safeDownloadUrl}
             </p>
           </div>`
     : `
@@ -46,7 +56,7 @@ export async function sendPurchaseConfirmation({
   return getResend().emails.send({
     from: FROM,
     to,
-    subject: `【shokulab】ご購入ありがとうございます — ${productTitle}`,
+    subject: `【shokulab】ご購入ありがとうございます — ${escapeHtml(productTitle)}`,
     html: `
       <div style="font-family: 'Noto Sans JP', sans-serif; max-width: 560px; margin: 0 auto; color: #0D1B26;">
         <div style="background: #0099CC; padding: 24px 32px; border-radius: 10px 10px 0 0;">
@@ -60,7 +70,7 @@ export async function sendPurchaseConfirmation({
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
             <tr style="border-bottom: 1px solid #E2EBF0;">
               <td style="padding: 12px 0; font-size: 13px; color: #8EA4B4;">商品名</td>
-              <td style="padding: 12px 0; font-size: 14px; font-weight: 600; text-align: right;">${productTitle}</td>
+              <td style="padding: 12px 0; font-size: 14px; font-weight: 600; text-align: right;">${escapeHtml(productTitle)}</td>
             </tr>
             ${amount ? `<tr>
               <td style="padding: 12px 0; font-size: 13px; color: #8EA4B4;">金額</td>
@@ -107,7 +117,7 @@ export async function sendNgReportAdminNotification({
   return getResend().emails.send({
     from: FROM,
     to: ADMIN_EMAIL,
-    subject: `【NGレポート】新規サンプル請求 — ${company} ${name}様`,
+    subject: `【NGレポート】新規サンプル請求 — ${escapeHtml(company)} ${escapeHtml(name)}様`,
     html: `
       <div style="font-family: 'Noto Sans JP', sans-serif; max-width: 560px; margin: 0 auto; color: #0D1B26;">
         <div style="background: #003D5C; padding: 24px 32px; border-radius: 10px 10px 0 0;">
@@ -118,27 +128,27 @@ export async function sendNgReportAdminNotification({
           <table style="width: 100%; border-collapse: collapse;">
             <tr style="border-bottom: 1px solid #E2EBF0;">
               <td style="padding: 10px 0; font-size: 13px; color: #8EA4B4; width: 120px;">会社名</td>
-              <td style="padding: 10px 0; font-size: 14px; font-weight: 500;">${company}</td>
+              <td style="padding: 10px 0; font-size: 14px; font-weight: 500;">${escapeHtml(company)}</td>
             </tr>
             <tr style="border-bottom: 1px solid #E2EBF0;">
               <td style="padding: 10px 0; font-size: 13px; color: #8EA4B4;">担当者名</td>
-              <td style="padding: 10px 0; font-size: 14px;">${name}</td>
+              <td style="padding: 10px 0; font-size: 14px;">${escapeHtml(name)}</td>
             </tr>
             ${position ? `<tr style="border-bottom: 1px solid #E2EBF0;">
               <td style="padding: 10px 0; font-size: 13px; color: #8EA4B4;">役職</td>
-              <td style="padding: 10px 0; font-size: 14px;">${position}</td>
+              <td style="padding: 10px 0; font-size: 14px;">${escapeHtml(position)}</td>
             </tr>` : ""}
             <tr style="border-bottom: 1px solid #E2EBF0;">
               <td style="padding: 10px 0; font-size: 13px; color: #8EA4B4;">メール</td>
-              <td style="padding: 10px 0; font-size: 14px;"><a href="mailto:${email}" style="color: #0099CC;">${email}</a></td>
+              <td style="padding: 10px 0; font-size: 14px;"><a href="mailto:${escapeHtml(email)}" style="color: #0099CC;">${escapeHtml(email)}</a></td>
             </tr>
             ${productCategory ? `<tr style="border-bottom: 1px solid #E2EBF0;">
               <td style="padding: 10px 0; font-size: 13px; color: #8EA4B4;">業種</td>
-              <td style="padding: 10px 0; font-size: 14px;">${categoryLabels[productCategory] || productCategory}</td>
+              <td style="padding: 10px 0; font-size: 14px;">${escapeHtml(categoryLabels[productCategory] || productCategory)}</td>
             </tr>` : ""}
             ${message ? `<tr>
               <td style="padding: 10px 0; font-size: 13px; color: #8EA4B4; vertical-align: top;">メッセージ</td>
-              <td style="padding: 10px 0; font-size: 14px; line-height: 1.7;">${message}</td>
+              <td style="padding: 10px 0; font-size: 14px; line-height: 1.7;">${escapeHtml(message)}</td>
             </tr>` : ""}
           </table>
           <div style="margin-top: 24px;">
@@ -171,7 +181,7 @@ export async function sendNgReportAutoReply({
         </div>
         <div style="border: 1px solid #E2EBF0; border-top: none; padding: 32px; border-radius: 0 0 10px 10px;">
           <p style="font-size: 14px; color: #4A6070; line-height: 1.8; margin: 0 0 20px;">
-            ${name} 様
+            ${escapeHtml(name)} 様
           </p>
           <h2 style="font-size: 18px; font-weight: 700; margin: 0 0 20px;">
             サンプル請求を受け付けました
@@ -215,7 +225,7 @@ export async function sendLeadNotification({
   return getResend().emails.send({
     from: FROM,
     to: ADMIN_EMAIL,
-    subject: `【shokulab】新規リード — ${name || email}`,
+    subject: `【shokulab】新規リード — ${escapeHtml(name || email)}`,
     html: `
       <div style="font-family: 'Noto Sans JP', sans-serif; max-width: 560px; margin: 0 auto; color: #0D1B26;">
         <div style="background: #0099CC; padding: 24px 32px; border-radius: 10px 10px 0 0;">
@@ -226,15 +236,15 @@ export async function sendLeadNotification({
           <table style="width: 100%; border-collapse: collapse;">
             <tr style="border-bottom: 1px solid #E2EBF0;">
               <td style="padding: 10px 0; font-size: 13px; color: #8EA4B4; width: 120px;">メール</td>
-              <td style="padding: 10px 0; font-size: 14px;"><a href="mailto:${email}" style="color: #0099CC;">${email}</a></td>
+              <td style="padding: 10px 0; font-size: 14px;"><a href="mailto:${escapeHtml(email)}" style="color: #0099CC;">${escapeHtml(email)}</a></td>
             </tr>
             ${name ? `<tr style="border-bottom: 1px solid #E2EBF0;">
               <td style="padding: 10px 0; font-size: 13px; color: #8EA4B4;">名前</td>
-              <td style="padding: 10px 0; font-size: 14px;">${name}</td>
+              <td style="padding: 10px 0; font-size: 14px;">${escapeHtml(name)}</td>
             </tr>` : ""}
             ${source ? `<tr>
               <td style="padding: 10px 0; font-size: 13px; color: #8EA4B4;">ソース</td>
-              <td style="padding: 10px 0; font-size: 14px;">${source}</td>
+              <td style="padding: 10px 0; font-size: 14px;">${escapeHtml(source)}</td>
             </tr>` : ""}
           </table>
           <div style="margin-top: 24px;">

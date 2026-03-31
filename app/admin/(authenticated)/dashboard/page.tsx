@@ -13,6 +13,7 @@ export default async function DashboardPage() {
     { count: blogCount },
     { count: leadCount },
     { data: recentPurchases },
+    { count: purchaseCount },
     { data: recentLeads },
     { count: ngRequestCount },
   ] = await Promise.all([
@@ -20,6 +21,7 @@ export default async function DashboardPage() {
     supabase.from("blog_posts").select("*", { count: "exact", head: true }).eq("is_published", true),
     supabase.from("leads").select("*", { count: "exact", head: true }),
     supabase.from("purchases").select("*").order("created_at", { ascending: false }).limit(5),
+    supabase.from("purchases").select("*", { count: "exact", head: true }),
     supabase.from("leads").select("*").order("created_at", { ascending: false }).limit(5),
     supabase.from("ng_report_requests").select("*", { count: "exact", head: true }),
   ])
@@ -50,7 +52,7 @@ export default async function DashboardPage() {
       {/* Sub stats */}
       <div className="grid sm:grid-cols-2 gap-4 mb-8">
         <StatCard icon={Mail} label="NGレポート サンプル請求数" value={String(ngRequestCount ?? 0)} />
-        <StatCard icon={ShoppingCart} label="累計購入数" value={String(recentPurchases?.length ?? 0)} />
+        <StatCard icon={ShoppingCart} label="累計購入数" value={String(purchaseCount ?? 0)} />
       </div>
 
       {/* Recent activity */}

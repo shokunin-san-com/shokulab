@@ -60,7 +60,10 @@ export default function BlogPostForm({ post }: Props) {
       seo_title: form.seo_title || null,
       seo_description: form.seo_description || null,
       is_published: form.is_published,
-      published_at: form.is_published ? new Date().toISOString() : null,
+      // 新規 or 非公開→公開への遷移時のみ published_at をセット。既存公開記事は保持。
+      published_at: form.is_published
+        ? (isNew || !post?.is_published ? new Date().toISOString() : post.published_at)
+        : null,
     }
 
     if (isNew) {

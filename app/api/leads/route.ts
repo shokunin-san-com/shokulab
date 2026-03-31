@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
     })
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error("Failed to insert lead:", error.message)
+      return NextResponse.json({ error: "データ保存に失敗しました。" }, { status: 500 })
     }
 
     // 管理者に通知（新規登録時のみ）

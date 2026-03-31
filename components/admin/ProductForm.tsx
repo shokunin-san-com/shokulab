@@ -77,6 +77,11 @@ export default function ProductForm({ product }: Props) {
       setSaving(false)
       return
     }
+    if (priceMax !== null && priceMax < priceMin) {
+      setError("最高価格は最低価格以上にしてください。")
+      setSaving(false)
+      return
+    }
 
     const data = {
       ...form,

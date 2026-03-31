@@ -40,7 +40,8 @@ export async function POST(request: NextRequest) {
     })
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error("Failed to insert ng_report_request:", error.message)
+      return NextResponse.json({ error: "データ保存に失敗しました。" }, { status: 500 })
     }
 
     // リードテーブルにも登録（重複は無視）

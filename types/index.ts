@@ -24,6 +24,10 @@ export interface Product {
   axis: Axis | null
   is_published: boolean
   sort_order: number
+  download_url: string | null
+  image_url: string | null
+  features: string[]
+  body: string | null
   created_at: string
   updated_at: string
 }

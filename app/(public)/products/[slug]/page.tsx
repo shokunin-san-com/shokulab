@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, ExternalLink, CheckCircle } from "lucide-react"
+import Image from "next/image"
+import { ArrowLeft, ExternalLink } from "lucide-react"
 import { formatPriceRange } from "@/lib/utils"
 import { productJsonLd, breadcrumbJsonLd } from "@/lib/jsonld"
 import SiteNav from "@/components/public/SiteNav"
@@ -90,6 +91,19 @@ export default async function ProductDetailPage({
           商品一覧に戻る
         </Link>
 
+        {/* 商品画像 */}
+        {p.image_url && (
+          <div className="relative w-full aspect-[16/7] rounded-[10px] overflow-hidden mb-8 border border-[#E2EBF0]">
+            <Image
+              src={p.image_url}
+              alt={p.title}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+        )}
+
         <div className="bg-white border border-[#E2EBF0] rounded-[10px] p-10">
           <h1 className="text-[30px] font-black text-[#0D1B26] mb-5 tracking-tight">
             {p.title}
@@ -110,28 +124,25 @@ export default async function ProductDetailPage({
             </div>
           )}
 
-          {/* Features */}
-          <div className="bg-[#F6F9FB] rounded-lg p-7 mb-10">
-            <h2 className="font-bold text-[#0D1B26] mb-4 text-[15px]">
-              この商品に含まれるもの
-            </h2>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-2.5 text-sm text-gray-500">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-0.5 flex-shrink-0">
-                  <circle cx="8" cy="8" r="8" fill="#0099CC" opacity="0.15" />
-                  <path d="M4.5 8L6.8 10.5L11.5 5.5" stroke="#0099CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                ダウンロード即利用可能
-              </li>
-              <li className="flex items-start gap-2.5 text-sm text-gray-500">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-0.5 flex-shrink-0">
-                  <circle cx="8" cy="8" r="8" fill="#0099CC" opacity="0.15" />
-                  <path d="M4.5 8L6.8 10.5L11.5 5.5" stroke="#0099CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                購入後のメールサポート付き
-              </li>
-            </ul>
-          </div>
+          {/* 特典リスト */}
+          {p.features && p.features.length > 0 && (
+            <div className="bg-[#F6F9FB] rounded-lg p-7 mb-10">
+              <h2 className="font-bold text-[#0D1B26] mb-4 text-[15px]">
+                この商品に含まれるもの
+              </h2>
+              <ul className="space-y-3">
+                {p.features.map((feature, i) => (
+                  <li key={i} className="flex items-start gap-2.5 text-sm text-gray-500">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-0.5 flex-shrink-0">
+                      <circle cx="8" cy="8" r="8" fill="#0099CC" opacity="0.15" />
+                      <path d="M4.5 8L6.8 10.5L11.5 5.5" stroke="#0099CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* CTA */}
           {p.stripe_payment_link ? (
@@ -148,6 +159,15 @@ export default async function ProductDetailPage({
             <p className="text-gray-500 text-sm bg-[#F6F9FB] rounded-lg p-5">
               この商品は現在準備中です。販売開始までしばらくお待ちください。
             </p>
+          )}
+
+          {/* 詳細本文 */}
+          {p.body && (
+            <div className="mt-12 pt-10 border-t border-[#E2EBF0]">
+              <div className="prose prose-sm max-w-none text-gray-600 leading-relaxed whitespace-pre-wrap">
+                {p.body}
+              </div>
+            </div>
           )}
         </div>
       </main>

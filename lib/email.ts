@@ -19,11 +19,30 @@ export async function sendPurchaseConfirmation({
   to,
   productTitle,
   amount,
+  downloadUrl,
 }: {
   to: string
   productTitle: string
   amount: number | null
+  downloadUrl: string | null
 }) {
+  const downloadSection = downloadUrl
+    ? `
+          <div style="background: #F0F9FD; border-left: 3px solid #0099CC; padding: 20px 24px; border-radius: 0 8px 8px 0; margin-bottom: 24px;">
+            <p style="font-size: 13px; font-weight: 700; color: #0099CC; margin: 0 0 10px;">ダウンロードはこちら</p>
+            <a href="${downloadUrl}" style="display: inline-block; background: #0099CC; color: #fff; padding: 12px 28px; border-radius: 6px; font-size: 14px; font-weight: 700; text-decoration: none;">
+              ダウンロードする
+            </a>
+            <p style="font-size: 12px; color: #8EA4B4; margin: 10px 0 0;">
+              リンクが開かない場合: ${downloadUrl}
+            </p>
+          </div>`
+    : `
+          <p style="font-size: 14px; color: #4A6070; line-height: 1.8; margin: 0 0 24px;">
+            ダウンロードリンクは別途メールでお送りいたします。<br>
+            しばらくお待ちください。
+          </p>`
+
   return getResend().emails.send({
     from: FROM,
     to,
@@ -48,10 +67,7 @@ export async function sendPurchaseConfirmation({
               <td style="padding: 12px 0; font-size: 14px; font-weight: 600; text-align: right;">¥${amount.toLocaleString()}</td>
             </tr>` : ""}
           </table>
-          <p style="font-size: 14px; color: #4A6070; line-height: 1.8; margin: 0 0 24px;">
-            ダウンロードリンクは別途メールでお送りいたします。<br>
-            しばらくお待ちください。
-          </p>
+          ${downloadSection}
           <hr style="border: none; border-top: 1px solid #E2EBF0; margin: 24px 0;" />
           <p style="font-size: 12px; color: #8EA4B4; line-height: 1.6; margin: 0;">
             このメールは shokulab.com からの自動送信です。<br>

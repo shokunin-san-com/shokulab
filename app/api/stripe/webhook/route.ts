@@ -38,14 +38,16 @@ export async function POST(request: NextRequest) {
 
     let productId: string | null = null
     let productTitle = "ご購入商品"
+    let downloadUrl: string | null = null
     if (productSlug) {
       const { data: product } = await supabase
         .from("products")
-        .select("id, title")
+        .select("id, title, download_url")
         .eq("slug", productSlug)
         .single()
       productId = product?.id ?? null
       productTitle = product?.title ?? productTitle
+      downloadUrl = product?.download_url ?? null
     }
 
     await supabase.from("purchases").insert({
@@ -64,6 +66,7 @@ export async function POST(request: NextRequest) {
           to: customerEmail,
           productTitle,
           amount: session.amount_total ? Math.round(session.amount_total) : null,
+          downloadUrl,
         })
       } catch (e) {
         console.error("Failed to send purchase confirmation email:", e)

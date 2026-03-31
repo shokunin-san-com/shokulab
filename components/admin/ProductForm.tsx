@@ -51,6 +51,10 @@ export default function ProductForm({ product }: Props) {
     axis: product?.axis ?? "company",
     is_published: product?.is_published ?? false,
     sort_order: product?.sort_order ?? 0,
+    download_url: product?.download_url ?? "",
+    image_url: product?.image_url ?? "",
+    features: (product?.features ?? []).join("\n"),
+    body: product?.body ?? "",
   })
 
   const [saving, setSaving] = useState(false)
@@ -73,6 +77,12 @@ export default function ProductForm({ product }: Props) {
       stripe_payment_link: form.stripe_payment_link || null,
       target: form.target || null,
       description: form.description || null,
+      download_url: form.download_url || null,
+      image_url: form.image_url || null,
+      features: form.features
+        ? form.features.split("\n").map((s) => s.trim()).filter(Boolean)
+        : [],
+      body: form.body || null,
     }
 
     if (isNew) {
@@ -215,6 +225,46 @@ export default function ProductForm({ product }: Props) {
           onChange={(e) => update("stripe_payment_link", e.target.value)}
           className="input"
           placeholder="https://buy.stripe.com/..."
+        />
+      </Field>
+
+      <Field label="ダウンロードURL（購入後メールに自動送信）">
+        <input
+          type="url"
+          value={form.download_url}
+          onChange={(e) => update("download_url", e.target.value)}
+          className="input"
+          placeholder="https://drive.google.com/... or https://..."
+        />
+      </Field>
+
+      <Field label="商品画像URL">
+        <input
+          type="url"
+          value={form.image_url}
+          onChange={(e) => update("image_url", e.target.value)}
+          className="input"
+          placeholder="https://..."
+        />
+      </Field>
+
+      <Field label="特典リスト（1行1項目）">
+        <textarea
+          value={form.features}
+          onChange={(e) => update("features", e.target.value)}
+          rows={4}
+          className="input"
+          placeholder={"PDF 32ページ\nExcelテンプレ付き\n商用利用可\n購入後サポートメール付き"}
+        />
+      </Field>
+
+      <Field label="商品詳細本文（Markdown可）">
+        <textarea
+          value={form.body}
+          onChange={(e) => update("body", e.target.value)}
+          rows={8}
+          className="input"
+          placeholder="## こんな方におすすめ&#10;&#10;- ...&#10;&#10;## 内容"
         />
       </Field>
 

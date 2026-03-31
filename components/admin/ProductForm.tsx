@@ -69,11 +69,20 @@ export default function ProductForm({ product }: Props) {
     setSaving(true)
     setError("")
 
+    const priceMin = Number(form.price_min)
+    const priceMax = form.price_max === "" ? null : Number(form.price_max)
+    const sortOrder = Number(form.sort_order)
+    if (isNaN(priceMin) || (priceMax !== null && isNaN(priceMax)) || isNaN(sortOrder)) {
+      setError("価格・並び順は数値で入力してください。")
+      setSaving(false)
+      return
+    }
+
     const data = {
       ...form,
-      price_max: form.price_max === "" ? null : Number(form.price_max),
-      price_min: Number(form.price_min),
-      sort_order: Number(form.sort_order),
+      price_max: priceMax,
+      price_min: priceMin,
+      sort_order: sortOrder,
       stripe_payment_link: form.stripe_payment_link || null,
       target: form.target || null,
       description: form.description || null,

@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import { createPublicClient } from "@/lib/supabase/server"
 import BlogCard from "@/components/public/BlogCard"
 import SiteNav from "@/components/public/SiteNav"
 import SiteFooter from "@/components/public/SiteFooter"
@@ -13,10 +13,10 @@ export const metadata: Metadata = {
     "職人・建設業界に関するノウハウ、最新情報をお届けします。",
 }
 
-export const dynamic = "force-dynamic"
+export const revalidate = 3600
 
 export default async function BlogPage() {
-  const supabase = createClient()
+  const supabase = createPublicClient()
   const { data: posts } = await supabase
     .from("blog_posts")
     .select("*")

@@ -1,13 +1,13 @@
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import { createPublicClient } from "@/lib/supabase/server"
 import SiteNav from "@/components/public/SiteNav"
 import SiteFooter from "@/components/public/SiteFooter"
 import type { BlogPost } from "@/types"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 3600
 
 export default async function HomePage() {
-  const supabase = createClient()
+  const supabase = createPublicClient()
   const { data: posts } = await supabase
     .from("blog_posts")
     .select("id, title, slug, category, created_at, published_at")

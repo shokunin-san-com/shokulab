@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createPublicClient } from "@/lib/supabase/server"
 import ProductCard from "@/components/public/ProductCard"
 import SiteNav from "@/components/public/SiteNav"
 import SiteFooter from "@/components/public/SiteFooter"
@@ -11,10 +11,10 @@ export const metadata: Metadata = {
     "職人・建設業界向けの業務テンプレート、AI活用ガイド、M&A教材をお探しの方はこちら。",
 }
 
-export const dynamic = "force-dynamic"
+export const revalidate = 3600
 
 export default async function ProductsPage() {
-  const supabase = createClient()
+  const supabase = createPublicClient()
   const { data: products } = await supabase
     .from("products")
     .select("*")

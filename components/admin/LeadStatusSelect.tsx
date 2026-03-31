@@ -21,10 +21,15 @@ export default function LeadStatusSelect({
   const router = useRouter()
 
   async function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    await supabase
+    const { error } = await supabase
       .from("leads")
       .update({ status: e.target.value })
       .eq("id", id)
+    if (error) {
+      console.error("Failed to update lead status:", error)
+      alert("ステータスの更新に失敗しました。")
+      return
+    }
     router.refresh()
   }
 

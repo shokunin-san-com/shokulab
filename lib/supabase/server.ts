@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr"
+import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import { cookies } from "next/headers"
 
 export function createClient() {
@@ -23,6 +24,14 @@ export function createClient() {
         },
       },
     }
+  )
+}
+
+/** 公開ページ用: cookies() を呼ばないので ISR/SSG と互換 */
+export function createPublicClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 }
 

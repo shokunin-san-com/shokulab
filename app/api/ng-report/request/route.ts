@@ -76,7 +76,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true })
-  } catch {
+  } catch (err) {
+    console.error("POST /api/ng-report/request error:", err)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

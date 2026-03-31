@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createPublicClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -11,14 +11,23 @@ import MarkdownRenderer from "@/components/public/MarkdownRenderer"
 import type { Product } from "@/types"
 import type { Metadata } from "next"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const supabase = createPublicClient()
+  const { data: products } = await supabase
+    .from("products")
+    .select("slug")
+    .eq("is_published", true)
+  return (products ?? []).map((p) => ({ slug: p.slug }))
+}
 
 export async function generateMetadata({
   params,
 }: {
   params: { slug: string }
 }): Promise<Metadata> {
-  const supabase = createClient()
+  const supabase = createPublicClient()
   const { data: product } = await supabase
     .from("products")
     .select("title, description")
@@ -47,7 +56,7 @@ export default async function ProductDetailPage({
 }: {
   params: { slug: string }
 }) {
-  const supabase = createClient()
+  const supabase = createPublicClient()
   const { data: product } = await supabase
     .from("products")
     .select("*")

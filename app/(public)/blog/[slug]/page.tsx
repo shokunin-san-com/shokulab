@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createPublicClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Clock, ChevronRight } from "lucide-react"
@@ -14,7 +14,16 @@ import TableOfContents, {
 import RelatedArticles from "@/components/public/RelatedArticles"
 import type { Metadata } from "next"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const supabase = createPublicClient()
+  const { data: posts } = await supabase
+    .from("blog_posts")
+    .select("slug")
+    .eq("is_published", true)
+  return (posts ?? []).map((p) => ({ slug: p.slug }))
+}
 
 const categoryLabels: Record<string, string> = {
   craftsman: "業務効率化",
@@ -28,7 +37,7 @@ export async function generateMetadata({
 }: {
   params: { slug: string }
 }): Promise<Metadata> {
-  const supabase = createClient()
+  const supabase = createPublicClient()
   const { data: post } = await supabase
     .from("blog_posts")
     .select("title, seo_title, seo_description")
@@ -57,7 +66,7 @@ export default async function BlogPostPage({
 }: {
   params: { slug: string }
 }) {
-  const supabase = createClient()
+  const supabase = createPublicClient()
   const { data: post } = await supabase
     .from("blog_posts")
     .select("*")

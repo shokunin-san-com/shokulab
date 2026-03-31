@@ -38,7 +38,8 @@ export async function POST(request: NextRequest) {
     await sendLeadNotification({ email, name, source })
 
     return NextResponse.json({ success: true })
-  } catch {
+  } catch (err) {
+    console.error("POST /api/leads error:", err)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

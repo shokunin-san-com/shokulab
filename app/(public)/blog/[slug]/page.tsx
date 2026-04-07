@@ -1,3 +1,4 @@
+import { markdownToHtml } from "@/lib/markdownToHtml"
 import { createPublicClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import Link from "next/link"
@@ -7,10 +8,8 @@ import { articleJsonLd, breadcrumbJsonLd } from "@/lib/jsonld"
 import SiteNav from "@/components/public/SiteNav"
 import SiteFooter from "@/components/public/SiteFooter"
 import MarkdownRenderer from "@/components/public/MarkdownRenderer"
-import TableOfContents, {
-  extractHeadings,
-  estimateReadingTime,
-} from "@/components/public/TableOfContents"
+import TableOfContents from "@/components/public/TableOfContents"
+import { extractHeadings, estimateReadingTime } from "@/lib/headingUtils"
 import RelatedArticles from "@/components/public/RelatedArticles"
 import type { Metadata } from "next"
 
@@ -87,7 +86,10 @@ export default async function BlogPostPage({
     .limit(3)
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shokulab.com"
-  const content = post.content || ""
+  const rawContent = post.content || ""
+  // Markdown → HTML変換（server component側でのみ実施）
+  const isHtml = rawContent.trim().startsWith("<") && /<\/(p|h[1-6]|div|section|article)>/.test(rawContent)
+  const content = isHtml ? rawContent : markdownToHtml(rawContent)
   const headings = extractHeadings(content)
   const readingTime = estimateReadingTime(content)
   const hasToc = headings.length >= 2

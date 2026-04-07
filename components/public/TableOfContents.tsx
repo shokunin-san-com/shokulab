@@ -1,71 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { extractHeadings, estimateReadingTime } from "@/lib/headingUtils"
+import type { TocItem } from "@/lib/headingUtils"
 
-interface TocItem {
-  id: string
-  text: string
-  level: number
-}
-
-/**
- * HTML/Markdown コンテンツから見出しを抽出する。
- * h2, h3 を対象にする。
- */
-export function extractHeadings(content: string): TocItem[] {
-  const headings: TocItem[] = []
-  // HTML形式の見出しを抽出
-  const htmlRegex = /<h([23])[^>]*>(.*?)<\/h\1>/gi
-  let match
-  while ((match = htmlRegex.exec(content)) !== null) {
-    const level = parseInt(match[1])
-    const text = match[2].replace(/<[^>]+>/g, "").trim()
-    if (text) {
-      headings.push({
-        id: slugify(text),
-        text,
-        level,
-      })
-    }
-  }
-
-  // Markdown形式の見出しを抽出（HTMLがなかった場合）
-  if (headings.length === 0) {
-    const mdRegex = /^(#{2,3})\s+(.+)$/gm
-    while ((match = mdRegex.exec(content)) !== null) {
-      const level = match[1].length
-      const text = match[2].trim()
-      if (text) {
-        headings.push({
-          id: slugify(text),
-          text,
-          level,
-        })
-      }
-    }
-  }
-
-  return headings
-}
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\u3000-\u9fff\u30a0-\u30ff\u3040-\u309f\s-]/g, "")
-    .replace(/[\s]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-    || `heading-${Math.random().toString(36).slice(2, 8)}`
-}
-
-/**
- * 読了時間を推定する（日本語：400文字/分）
- */
-export function estimateReadingTime(content: string): number {
-  const text = content.replace(/<[^>]+>/g, "").replace(/[#*_~`]/g, "").trim()
-  const charCount = text.length
-  return Math.max(1, Math.ceil(charCount / 400))
-}
+export { extractHeadings, estimateReadingTime }
+export type { TocItem }
 
 export default function TableOfContents({ content }: { content: string }) {
   const [activeId, setActiveId] = useState<string>("")

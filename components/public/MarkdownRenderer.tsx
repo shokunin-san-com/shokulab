@@ -1,6 +1,6 @@
 "use client"
 
-import DOMPurify from "isomorphic-dompurify"
+import { useEffect, useRef } from "react"
 
 function slugify(text: string): string {
   return text
@@ -53,17 +53,30 @@ const htmlStyles = `
  */
 export default function MarkdownRenderer({ content }: { content: string }) {
   const withIds = addIdsToHtmlHeadings(content)
-  const safeHtml = DOMPurify.sanitize(withIds, {
-    ADD_TAGS: ["iframe"],
-    ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"],
-  })
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    // クライアント側でDOMPurifyをdynamic importしてサニタイズ
+    let cancelled = false
+    import("dompurify").then((mod) => {
+      if (cancelled || !ref.current) return
+      const DOMPurify = mod.default || mod
+      const safeHtml = DOMPurify.sanitize(withIds, {
+        ADD_TAGS: ["iframe"],
+        ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"],
+      })
+      ref.current.innerHTML = safeHtml
+    })
+    return () => { cancelled = true }
+  }, [withIds])
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: htmlStyles }} />
       <div
+        ref={ref}
         className="blog-html-content"
-        dangerouslySetInnerHTML={{ __html: safeHtml }}
+        dangerouslySetInnerHTML={{ __html: withIds }}
       />
     </>
   )

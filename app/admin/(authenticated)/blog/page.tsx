@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Plus } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 import type { BlogPost } from "@/types"
+import GenerateButton from "./GenerateButton"
 
 export const dynamic = "force-dynamic"
 
@@ -24,13 +25,16 @@ export default async function AdminBlogPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-primary">ブログ管理</h1>
-        <Link
-          href="/admin/blog/new"
-          className="flex items-center gap-2 bg-accent text-white px-4 py-2 rounded text-sm font-bold hover:opacity-90 transition"
-        >
-          <Plus className="w-4 h-4" />
-          新規記事
-        </Link>
+        <div className="flex items-center gap-2">
+          <GenerateButton />
+          <Link
+            href="/admin/blog/new"
+            className="flex items-center gap-2 bg-accent text-white px-4 py-2 rounded text-sm font-bold hover:opacity-90 transition"
+          >
+            <Plus className="w-4 h-4" />
+            新規記事
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white border border-border rounded-md overflow-hidden">

@@ -31,15 +31,25 @@ export default function BlogCard({ post }: { post: BlogPost }) {
       href={`/blog/${post.slug}`}
       className="bg-white border border-[#E2EBF0] rounded-[10px] overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all block"
     >
-      {/* Category-styled thumbnail */}
-      <div
-        className="h-[140px] flex items-end p-5 border-b border-[#E2EBF0] relative"
-        style={{ background: gradient }}
-      >
-        <p className={`text-[13px] font-bold leading-snug line-clamp-2 ${isOwner ? "text-white" : "text-brand-navy"}`}>
-          {post.title}
-        </p>
-      </div>
+      {/* Thumbnail */}
+      {post.image_url ? (
+        <div className="h-[140px] border-b border-[#E2EBF0] overflow-hidden">
+          <img
+            src={post.image_url}
+            alt={post.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ) : (
+        <div
+          className="h-[140px] flex items-end p-5 border-b border-[#E2EBF0] relative"
+          style={{ background: gradient }}
+        >
+          <p className={`text-[13px] font-bold leading-snug line-clamp-2 ${isOwner ? "text-white" : "text-brand-navy"}`}>
+            {post.title}
+          </p>
+        </div>
+      )}
       <div className="px-5 py-5">
         <div className="flex justify-between items-center mb-3">
           <div className="flex items-center gap-2">

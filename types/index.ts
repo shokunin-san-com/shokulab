@@ -42,6 +42,7 @@ export interface BlogPost {
   tags: string[] | null
   seo_title: string | null
   seo_description: string | null
+  image_url: string | null
   is_published: boolean
   published_at: string | null
   created_at: string

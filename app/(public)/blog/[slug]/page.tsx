@@ -39,7 +39,7 @@ export async function generateMetadata({
   const supabase = createPublicClient()
   const { data: post } = await supabase
     .from("blog_posts")
-    .select("title, seo_title, seo_description")
+    .select("title, seo_title, seo_description, image_url")
     .eq("slug", params.slug)
     .eq("is_published", true)
     .single()
@@ -56,6 +56,7 @@ export async function generateMetadata({
       description: post.seo_description || undefined,
       type: "article",
       url: `${siteUrl}/blog/${params.slug}`,
+      ...(post.image_url ? { images: [{ url: post.image_url }] } : {}),
     },
   }
 }
@@ -142,6 +143,16 @@ export default async function BlogPostPage({
           {/* Article */}
           <div className={hasToc ? "flex-1 min-w-0" : "max-w-[760px] mx-auto"}>
             <article className="bg-white border border-[#E2EBF0] rounded-[10px] overflow-hidden">
+              {/* Hero image */}
+              {post.image_url && (
+                <div className="w-full aspect-[2/1] relative overflow-hidden">
+                  <img
+                    src={post.image_url}
+                    alt={post.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
               {/* Article header */}
               <div className="px-10 pt-10 pb-8 border-b border-[#E2EBF0]">
                 <div className="flex items-center gap-3 mb-5">

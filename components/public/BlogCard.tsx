@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import type { BlogPost } from "@/types"
 
 const categoryLabels: Record<string, string> = {
@@ -15,16 +16,10 @@ const categoryGradients: Record<string, string> = {
   ma: "linear-gradient(135deg, #FFF8EC 0%, #FFE8B8 100%)",
 }
 
-const categoryIcons: Record<string, string> = {
-  craftsman: "wrench",
-  owner: "trending-up",
-  maker: "cpu",
-  ma: "handshake",
-}
-
-export default function BlogCard({ post }: { post: BlogPost }) {
+export default function BlogCard({ post, priority = false }: { post: BlogPost; priority?: boolean }) {
   const gradient = categoryGradients[post.category || ""] || categoryGradients.craftsman
   const isOwner = post.category === "owner"
+  const altText = post.seo_title || post.title
 
   return (
     <Link
@@ -33,11 +28,14 @@ export default function BlogCard({ post }: { post: BlogPost }) {
     >
       {/* Thumbnail */}
       {post.image_url ? (
-        <div className="h-[140px] border-b border-[#E2EBF0] overflow-hidden">
-          <img
+        <div className="h-[140px] border-b border-[#E2EBF0] overflow-hidden relative">
+          <Image
             src={post.image_url}
-            alt={post.title}
-            className="w-full h-full object-cover"
+            alt={altText}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover"
+            priority={priority}
           />
         </div>
       ) : (

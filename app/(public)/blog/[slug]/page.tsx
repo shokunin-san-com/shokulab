@@ -2,6 +2,7 @@ import { markdownToHtml } from "@/lib/markdownToHtml"
 import { createPublicClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowLeft, Clock, ChevronRight } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 import { articleJsonLd, breadcrumbJsonLd } from "@/lib/jsonld"
@@ -146,10 +147,13 @@ export default async function BlogPostPage({
               {/* Hero image */}
               {post.image_url && (
                 <div className="w-full aspect-[2/1] relative overflow-hidden">
-                  <img
+                  <Image
                     src={post.image_url}
-                    alt={post.title}
-                    className="w-full h-full object-cover"
+                    alt={post.seo_title || post.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1080px) 760px, 1080px"
+                    className="object-cover"
+                    priority
                   />
                 </div>
               )}

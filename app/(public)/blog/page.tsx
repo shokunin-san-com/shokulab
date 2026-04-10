@@ -1,27 +1,55 @@
 import Link from "next/link"
+import { Suspense } from "react"
 import { createPublicClient } from "@/lib/supabase/server"
 import BlogCard from "@/components/public/BlogCard"
+import CategoryFilter from "@/components/public/CategoryFilter"
 import SiteNav from "@/components/public/SiteNav"
 import SiteFooter from "@/components/public/SiteFooter"
 import { blogListJsonLd } from "@/lib/jsonld"
 import type { BlogPost } from "@/types"
 import type { Metadata } from "next"
 
-export const metadata: Metadata = {
-  title: "ブログ | shokulab",
-  description:
-    "職人・建設業界に関するノウハウ、最新情報をお届けします。",
+const CATEGORY_LABELS: Record<string, string> = {
+  craftsman: "業務効率化",
+  owner: "経営者向け",
+  maker: "AI活用",
+  ma: "建設業M&A",
+}
+
+export function generateMetadata({
+  searchParams,
+}: {
+  searchParams: { category?: string }
+}): Metadata {
+  const cat = searchParams.category
+  const catLabel = cat ? CATEGORY_LABELS[cat] : null
+  return {
+    title: catLabel ? `${catLabel} | ブログ | shokulab` : "ブログ | shokulab",
+    description: "職人・建設業界に関するノウハウ、最新情報をお届けします。",
+  }
 }
 
 export const revalidate = 3600
 
-export default async function BlogPage() {
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: { category?: string }
+}) {
   const supabase = createPublicClient()
-  const { data: posts } = await supabase
+  const category = searchParams.category || ""
+
+  let query = supabase
     .from("blog_posts")
     .select("*")
     .eq("is_published", true)
     .order("published_at", { ascending: false })
+
+  if (category) {
+    query = query.eq("category", category)
+  }
+
+  const { data: posts } = await query
 
   return (
     <div className="min-h-screen bg-[#F6F9FB]">
@@ -51,7 +79,9 @@ export default async function BlogPage() {
             BLOG
           </span>
           <h1 className="text-[36px] font-black tracking-tight text-[#0D1B26] mb-3">
-            ブログ
+            {category && CATEGORY_LABELS[category]
+              ? `ブログ — ${CATEGORY_LABELS[category]}`
+              : "ブログ"}
           </h1>
           <p className="text-[15px] text-gray-500 leading-relaxed">
             職人・建設業界に関するノウハウ、最新情報をお届けします。
@@ -60,16 +90,34 @@ export default async function BlogPage() {
       </section>
 
       {/* Content */}
-      <main className="max-w-[1040px] mx-auto px-16 py-16">
+      <main className="max-w-[1040px] mx-auto px-16 py-12">
+        {/* Category filter */}
+        <Suspense fallback={null}>
+          <CategoryFilter current={category} />
+        </Suspense>
+
         {posts && posts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {(posts as BlogPost[]).map((post) => (
-              <BlogCard key={post.id} post={post} />
-            ))}
-          </div>
+          <>
+            <p className="text-[12px] text-gray-400 mb-5">{posts.length}件</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {(posts as BlogPost[]).map((post, i) => (
+                <BlogCard key={post.id} post={post} priority={i < 3} />
+              ))}
+            </div>
+          </>
         ) : (
           <div className="bg-white border border-[#E2EBF0] rounded-[10px] p-16 text-center">
-            <p className="text-gray-500">記事は準備中です。</p>
+            <p className="text-gray-500">
+              {category ? "このカテゴリの記事はまだありません。" : "記事は準備中です。"}
+            </p>
+            {category && (
+              <Link
+                href="/blog"
+                className="inline-block mt-4 text-sm text-brand-blue hover:underline"
+              >
+                すべての記事を見る
+              </Link>
+            )}
           </div>
         )}
       </main>

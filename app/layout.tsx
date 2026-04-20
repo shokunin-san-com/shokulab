@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { DM_Sans, Noto_Sans_JP } from "next/font/google"
 import { websiteJsonLd } from "@/lib/jsonld"
 import { GoogleAnalytics } from "@/components/GoogleAnalytics"
+import { GoogleAdsense } from "@/components/GoogleAdsense"
 import "./globals.css"
 
 const dmSans = DM_Sans({
@@ -62,6 +63,7 @@ export default function RootLayout({
     <html lang="ja" className={`${dmSans.variable} ${notoSansJP.variable}`}>
       <body className="font-sans antialiased">
         <GoogleAnalytics />
+        <GoogleAdsense />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

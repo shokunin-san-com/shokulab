@@ -14,17 +14,25 @@ const ROWS: Array<[string, React.ReactNode]> = [
   ["運営責任者", "代表取締役 岡部洋佑"],
   [
     "所在地",
-    "ご請求いただいた場合、遅滞なく開示いたします。お問い合わせフォームよりご連絡ください。",
+    <>
+      〒220-0004
+      <br />
+      神奈川県横浜市西区北幸2丁目10-28 むつみビル3F
+    </>,
   ],
   [
-    "連絡先",
-    <>
-      <a key="c" href="/contact" className="text-brand-blue hover:underline">
-        お問い合わせフォーム
-      </a>
-      <br />
-      ご請求いただいた場合、電話番号を遅滞なく開示いたします。
-    </>,
+    "電話番号",
+    "03-6823-3524（平日 9:00〜18:00 / 土日祝休）",
+  ],
+  [
+    "メールアドレス",
+    "info@shokunin-san.com",
+  ],
+  [
+    "お問い合わせ",
+    <a key="c" href="/contact" className="text-brand-blue hover:underline">
+      お問い合わせフォーム
+    </a>,
   ],
   [
     "販売価格",

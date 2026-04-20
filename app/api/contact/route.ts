@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       try {
         const snippet = String(message).replace(/\n/g, " ").slice(0, 500)
         const content = [
-          "📩 **shokulab お問い合わせ**",
+          "**【shokulab お問い合わせ】**",
           `**種別**: ${category}`,
           `**氏名**: ${name}${company ? `（${company}）` : ""}`,
           `**メール**: ${email}`,

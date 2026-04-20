@@ -1,5 +1,3 @@
-import Script from "next/script"
-
 /**
  * Google AdSense 配信タグ
  *
@@ -8,6 +6,10 @@ import Script from "next/script"
  *
  * Vercel 側で NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-XXXXXXXXXXXXXXXX を設定すること。
  * AdSense 審査時のサイト所有確認用タグとしても機能する。
+ *
+ * 注: next/script の afterInteractive はクライアント側で動的に script タグを
+ * 挿入するため、JSを実行しないAdSenseクローラから見えない（所有権確認に失敗）。
+ * 静的HTMLに直接出力する素の <script> タグを使う。
  */
 export function GoogleAdsense() {
   const client = process.env.NEXT_PUBLIC_ADSENSE_CLIENT
@@ -17,11 +19,10 @@ export function GoogleAdsense() {
   }
 
   return (
-    <Script
+    <script
       async
       src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`}
       crossOrigin="anonymous"
-      strategy="afterInteractive"
     />
   )
 }

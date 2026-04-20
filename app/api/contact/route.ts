@@ -58,6 +58,31 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Discord通知（設定がある場合のみ・失敗してもAPIは成功扱い）
+    const webhookUrl = process.env.DISCORD_WEBHOOK_CONTACT
+    if (webhookUrl) {
+      try {
+        const snippet = String(message).replace(/\n/g, " ").slice(0, 500)
+        const content = [
+          "📩 **shokulab お問い合わせ**",
+          `**種別**: ${category}`,
+          `**氏名**: ${name}${company ? `（${company}）` : ""}`,
+          `**メール**: ${email}`,
+          `**内容**: ${snippet}${message.length > 500 ? "…" : ""}`,
+        ].join("\n")
+        await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: "shokulab お問い合わせ",
+            content,
+          }),
+        })
+      } catch (e) {
+        console.error("Discord notify failed:", e)
+      }
+    }
+
     return NextResponse.json({ success: true })
   } catch (err) {
     console.error("POST /api/contact error:", err)

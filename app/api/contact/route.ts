@@ -58,7 +58,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Discord通知（設定がある場合のみ・失敗してもAPIは成功扱い）
+    // Discord通知（A-4 #a4チャンネルのジニーwebhook流用を想定。
+    // 未設定時はスキップ。webhook側で設定された表示名をそのまま使う）
     const webhookUrl = process.env.DISCORD_WEBHOOK_CONTACT
     if (webhookUrl) {
       try {
@@ -73,10 +74,7 @@ export async function POST(request: NextRequest) {
         await fetch(webhookUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: "shokulab お問い合わせ",
-            content,
-          }),
+          body: JSON.stringify({ content }),
         })
       } catch (e) {
         console.error("Discord notify failed:", e)

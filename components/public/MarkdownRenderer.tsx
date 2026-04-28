@@ -34,6 +34,9 @@ const htmlStyles = `
   .blog-html-content blockquote { border-left: 3px solid #00A5D9; background: #F6F9FB; padding: 0.75rem 1rem 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 14px; color: #6B7280; font-style: italic; border-radius: 0 0.375rem 0.375rem 0; }
   .blog-html-content a { color: #00A5D9; text-decoration: underline; text-underline-offset: 2px; }
   .blog-html-content a:hover { color: #007AAD; }
+  .blog-html-content a.cta-button { display: block; width: 100%; max-width: 480px; margin: 1.5rem auto; padding: 16px 32px; background: #E8631A; color: #fff !important; text-align: center; text-decoration: none !important; font-weight: 700; font-size: 16px; border-radius: 8px; box-shadow: 0 4px 16px rgba(232,99,26,0.3); transition: transform 0.15s, box-shadow 0.15s; }
+  .blog-html-content a.cta-button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,99,26,0.4); color: #fff !important; }
+  .blog-html-content a.cta-button strong { color: #fff !important; font-weight: 700; }
   .blog-html-content strong { font-weight: 700; color: #0D1B26; }
   .blog-html-content code { background: #F0F4F7; color: #C7254E; font-size: 13px; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-family: monospace; }
   .blog-html-content pre { background: #1a2a35; color: #e2e8f0; font-size: 13px; line-height: 1.7; border-radius: 0.5rem; padding: 1.25rem; margin-bottom: 1.25rem; overflow-x: auto; font-family: monospace; }
